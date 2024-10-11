@@ -12,16 +12,34 @@
       "backgroundColor": "#ffffff"
     },
     "ios": {
-      "supportsTablet": true
+      "supportsTablet": true,
+      "infoPlist": {
+        "NSLocationWhenInUseUsageDescription": "We need access to your location to track your movements on the map."
+      }
     },
     "android": {
+      "config": {
+        "googleMaps": {
+          "apiKey": "AIzaSyAfEBbjyH0ico0Gp9Redclirwd1RhelRcY"
+        }
+      },
       "adaptiveIcon": {
         "foregroundImage": "./assets/adaptive-icon.png",
         "backgroundColor": "#ffffff"
-      }
+      },
+      "package": "com.jasper4545.BasuraManS",
+      "permissions": [
+        "ACCESS_FINE_LOCATION",
+        "ACCESS_COARSE_LOCATION"
+      ]
     },
     "web": {
       "favicon": "./assets/favicon.png"
+    },
+    "extra": {
+      "eas": {
+        "projectId": "938e798d-7ef6-46d5-9547-dd29412fc285"
+      }
     }
   }
 }
