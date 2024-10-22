@@ -14,6 +14,14 @@ export default function SingInStack({navigation}){
 
     async function login() {
         try {
+            if(userInput.username == "driver45" && userInput.password == "driver@123"){
+                navigation.reset({
+                    index:0,
+                    routes:[{'name':'DriverTab'}]
+                    // routes:[{'name':'adminStack', params:{userData: {}}}]
+                })
+                return
+            }
             const {data} = await axiosConfig.post("/user/login", {username:userInput.username, password: userInput.password})
             if(userInput.username == "admin" && userInput.password == "admin@123"){
                 navigation.reset({
@@ -38,9 +46,7 @@ export default function SingInStack({navigation}){
         <View stylre={styles.container}>
         <ImageBackground style={{position: 'absolute',width:width, height:height}} source={require("./../assets/admin/Background2.png")} resizeMode="stretch">
             <View style={{height:"8%",width:"100%", position:'absolute', backgroundColor:'#2ec351', display:'flex', flexDirection:'row', alignItems:'center'}}>
-                <TouchableOpacity style={{padding:10}}>
-                <Image  source={require("./../assets/arrow_left_back_icon_221067.png")} style={{width:20,height:25, marginLeft:10}}/>
-                </TouchableOpacity>
+              
                 <Text style={{fontSize:17, fontWeight:'bold', color:'white', marginLeft:20}}>BasuraMans</Text>
             </View>
            <View style={styles.signInBox}>

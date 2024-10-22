@@ -1,10 +1,12 @@
 import { useFocusEffect } from "@react-navigation/native"
-import { useCallback, useEffect, useState } from "react"
+import { useCallback, useEffect, useRef, useState } from "react"
 import { View, StyleSheet, Dimensions, Text, TouchableOpacity, ScrollView, Modal, Image, TextInput, Button, Alert, ToastAndroid } from "react-native"
 import axiosConfig from "../../staticVar.js/axiosConfig"
 import { ActivityIndicator } from "react-native"
-
+import { Animated } from "react-native-maps"
+import AsyncStorage from "@react-native-async-storage/async-storage"
 let interval = 0
+let prevMessageLength = 0
 const ToBox = (props)=>{
     return(
         <View style={{display:'flex', justifyContent:"flex-start", maxWidth:width*0.8, minWidth:2, flexWrap:'wrap', marginTop:10}}>
@@ -31,7 +33,7 @@ const Box = (props)=>{
     return(
         <TouchableOpacity style={styles.messageBox} onPress={()=>props.click()}>
         <Text style={{fontFamily:'poppinsBold', color:'white'}}>{props.data.fullaname}</Text>
-        <Text style={{color:"white"}}>see message</Text>
+        <Text style={props.isMessage > 0 ? {color:'white', fontWeight:'600'}:{color:"white"}}>{props.isMessage > 0? `${props.isMessage} new message` : "see message"}</Text>
     </TouchableOpacity>
     )
 }
@@ -44,7 +46,8 @@ export default function AdminMessage(){
     const [admin, setAdmin] = useState([])
     const [userss, setUsers] = useState([])
     const [isOpen, setOpen] = useState(false)
-
+    const scrollViewRef = useRef(null)
+    const [sdata, setSdata] = useState([])
     async function markReadMessage(id){
         try {
             await axiosConfig.post("/message/isRead",{id:id})
@@ -64,7 +67,12 @@ export default function AdminMessage(){
                });
             }
             exe()
-
+          
+           if(prevMessageLength < data.message.length){
+            console.log("hoyyy")
+             scrollViewRef.current?.scrollToEnd({animated:true})
+             prevMessageLength = data.message.length
+           }
         } catch (error) {
             // Alert.alert("Error on Get message", `${error.message}`)
             console.log(error)
@@ -94,17 +102,50 @@ export default function AdminMessage(){
             Alert.alert("error on message", `${error}`)
         }
     }
+    function seEIfMessage(fullaname){
+        try {
+            if(sdata){
+              
+                const a = sdata.filter(d=> d.from.toLowerCase() == fullaname.toLowerCase())
+                return a.length
+            }else{
+                return 0
+            }
+        } catch (error) {
+            Alert.alert(error.message)
+        }
+    }
+    async function getStoredData(){
+        try {
+            const storedData = await AsyncStorage.getItem("msg")
+            const arr = JSON.parse(storedData)
+            console.log(arr)
+            setSdata(arr)  
+        } catch (error) {
+            Alert.alert("Error on fetching stored data", error.message)
+        }
+    }
     useFocusEffect(
         useCallback(()=>{
             fetchChat()
-         
+          
+            getStoredData()
         }, [])
     )
     useEffect(()=>{
+        async function aa(){
+            await AsyncStorage.setItem("messageInterval", JSON.stringify(a))
+        }
         let a = setInterval(()=>{
+            getStoredData()
             getMessage()
-        },500)
-       
+        },1000)
+        prevMessageLength = 0
+       aa()
+      setTimeout(()=>{
+        scrollViewRef.current?.scrollToEnd({animated:true})
+      },1000)
+
         return ()=> clearInterval(a)
     },[to])
     return(
@@ -118,9 +159,9 @@ export default function AdminMessage(){
                             </TouchableOpacity>
                         </View>
                         {/* CONTENT */}
-                        <View style={{ height:height*0.82, padding:10, width:'100%'}}>
+                        <View style={{height:"82%", padding:10, width:'100%', marginBottom:20}}>
                               {/* Message from */}
-                              <ScrollView>
+                              <ScrollView ref={scrollViewRef}>
                             {
                                 message.length > 0 && isOpen?
                                 message.map((e,i)=>{
@@ -143,7 +184,7 @@ export default function AdminMessage(){
                     userss.length>0 ?
                     userss.map((e,i)=>{
                         return(
-                            <Box data={e} click={()=>{
+                            <Box data={e} isMessage={seEIfMessage(e.fullaname)} click={()=>{
                                 setTo(e.fullaname);
                                 setModal(true);
                                 setTimeout(()=>{

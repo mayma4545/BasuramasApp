@@ -223,7 +223,7 @@ async function sendMessageDecline(){
                             <Image source={require("./../../assets/476327_arrow_circle_left_prev_previous_icon.png")} />
                         </TouchableOpacity>
                     </View>     
-                <View style={{height:height*0.9, borderColor:'red', borderWidth:1, padding:10}}>
+                <View style={{height:height*0.9, padding:10}}>
                    {
                     collectorData.length > 0 ?
                     collectorData.map((e,i)=>{
@@ -298,7 +298,11 @@ async function sendMessageDecline(){
             <TouchableOpacity style={styless.box} onPress={()=>setModal(prev=>({...prev, premium:true}))}>
                 <Text style={{fontFamily:'poppinsBold',color:"white", fontSize:17 }}>Premium Account activation</Text>
             </TouchableOpacity>
-            <TouchableOpacity style={styless.box} onPress={()=>{
+            <TouchableOpacity style={styless.logoutBtn} onPress={async()=>{
+                const map = await AsyncStorage.getItem("mapInterval")
+                clearInterval(map)
+                const b = await AsyncStorage.getItem("messageInterval")
+                clearInterval(b)
                nav.reset({
                 index:0,
                 routes:[{'name':'signInStack'}]
@@ -324,7 +328,20 @@ const styless = StyleSheet.create({
         justifyContent:'center',
         alignSelf:'center',
         marginTop:10
-    } 
+    },
+    logoutBtn:{
+        position:'absolute',
+        width:"70%",
+        height:"10%",
+        top:'89%',
+        textAlign:'center',
+        padding:10,
+        backgroundColor:'#8da292',
+        justifyContent:'center',
+        alignItems:'center',
+        alignSelf:'center',
+        borderRadius:10
+    }
 })
 
 const styles = StyleSheet.create({

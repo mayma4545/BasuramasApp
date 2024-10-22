@@ -7,10 +7,11 @@ import LoadStack from './components/loadStack';
 import { useFonts } from 'expo-font';
 import getStartedPage from './components/getStartedPage';
 import userOption from './components/userOption';
-import SingInStack from './components/singInStack';
+import signInPage from './components/signInPage';
 import UserMainPage from './components/userMainPage';
 import CreateAccount from './components/createAcc';
 import AdminTab from './components/adminTabPage/adminTab';
+import DriverPageTab from './components/driverPageTab';
 
 export default function App() {
   const [fontsLoaded] = useFonts({
@@ -46,9 +47,10 @@ export default function App() {
          <Stack.Screen name="getStartedStack" component={getStartedPage}/>
          {/* <Stack.Screen  name="userOptionStack" component={userOption}/> */}
         <Stack.Screen   name="CreateAccountStack" component={CreateAccount} options={{headerShown:true, title:'Sign Up'}}/>
-         <Stack.Screen  name="signInStack" component={SingInStack}/>
+         <Stack.Screen  name="signInStack" component={signInPage}/>
          <Stack.Screen  name="adminTab" component={AdminTab}/>
          <Stack.Screen  name="userMainStack" component={UserMainPage}/>
+         <Stack.Screen  name="DriverTab" component={DriverPageTab}/>
       
        
       </Stack.Navigator>

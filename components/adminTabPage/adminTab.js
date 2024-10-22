@@ -33,8 +33,8 @@ export default function AdminTab({navigation}){
   async function getMessage() {
     try {
         const {data} = await axiosConfig.get(`/message/isRead?to=admin`)
-        
-        
+        const a = await JSON.stringify(data.data)
+        storeData("msg", a)
         setCount(e=>(data.count))
 
     } catch (error) {

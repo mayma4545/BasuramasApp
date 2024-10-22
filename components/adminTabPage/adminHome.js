@@ -139,7 +139,7 @@ export default function AdminHome({navigation}){
                     </View>
                 </View>
             </Modal>
-            <ImageBackground source={require("./../../assets/ADMIN DASHBOARD BACKGROUND.gif")} style={{position:'absolute', width:'100%', height:'100%', opacity:0.6}} resizeMode="cover"></ImageBackground>
+            <ImageBackground source={require("./../../assets/admin/Background.png")} style={{position:'absolute', width:'100%', height:'100%', opacity:0.6}} resizeMode="cover"></ImageBackground>
             <View style={styles.schedListCont}>
                 <ScrollView style={{flex:1}}>
                 {

@@ -2,16 +2,15 @@ import { View, TouchableOpacity, Text, StyleSheet, ImageBackground, Alert } from
 import { Dimensions } from "react-native";
 import { NavigationContainer } from '@react-navigation/native';
 import { createBottomTabNavigator } from '@react-navigation/bottom-tabs';
-import messagePage from "./userTabPage/messagePage";
 import { size } from "lodash";
 import Ionicons from 'react-native-vector-icons/Ionicons';
-import RouteTab from "./userTabPage/routeTab";
-import MoreTab from "./userTabPage/moreTab";
-import UserMainPageTab from "./userTabPage/mainPage";
+
 import AsyncStorage from "@react-native-async-storage/async-storage";
 import { useEffect, useState } from "react";
 import axiosConfig from "../staticVar.js/axiosConfig";
-
+import DriverHomePage from "./DriverTab/driverHomePage";
+import DriverRoutePage from "./DriverTab/DriverRoutePage";
+import DriverLogout from "./DriverTab/driverLogout";
 
 const  {width, height} = Dimensions.get("window")
 const Tab = createBottomTabNavigator();
@@ -21,32 +20,9 @@ const userInfo = {
   address: 'Brgy. Silangan Sanfernando masbate',
   contactNumber: '09197960151'
 }
-export default function UserMainPage({route, navigation}){
+export default function DriverPageTab({route, navigation}){
   const users = route.params
-  const [count, setCount] = useState(0)
-  async function storeData(key, value) {
-    try {
-      await AsyncStorage.setItem(key, value)
-    } catch (error) {
-      Alert.alert(`Error on storing Data on async Storage: ${error}`)
-    }
-  }
-  async function fetchUserMessagesCountData(){
-    try {
-        const {data} = await axiosConfig.get(`/message/isRead?to=${users.user.fullaname}`)
-        setCount(data.count)
-        storeData("userMessageData", JSON.stringify(data.count))
-    } catch (error) {
-      // Alert.alert("Network Error", error.message)
-      console.log("error")
-    }
-  }
-  useEffect(()=>{
-   const a = setInterval(()=>{
-      fetchUserMessagesCountData()
-    },3000)
-    storeData("interval3", JSON.stringify(a))
-  },[])
+ 
     return(
         <NavigationContainer  independent={true} >
         <Tab.Navigator   initialRouteName="Home"
@@ -62,7 +38,7 @@ export default function UserMainPage({route, navigation}){
                 iconName = focused ? 'mail' : 'mail-outline';
               } else if (route.name === 'Route') {
                 iconName = focused ? 'location' : 'location-outline';
-              } else if (route.name === 'More') {
+              } else if (route.name === 'Logout') {
                 iconName = focused ? 'ellipsis-horizontal' : 'ellipsis-vertical';
               }
   
@@ -81,12 +57,9 @@ export default function UserMainPage({route, navigation}){
             
           })}
         >    
-        
-          <Tab.Screen name="Home" component={UserMainPageTab} initialParams={users} />
-          <Tab.Screen  name="Message" component={messagePage} initialParams={users} options={{tabBarBadge:count < 1 ? null : count}}/>
-          <Tab.Screen name="Route" component={RouteTab} initialParams={users}/>
-          <Tab.Screen name="More" component={MoreTab} initialParams={{users, navigation}} />
-         
+          <Tab.Screen  name="Home" component={DriverHomePage} initialParams={users}/>
+          <Tab.Screen  name="Route" component={DriverRoutePage} initialParams={users}/>
+          <Tab.Screen  name="Logout" component={DriverLogout} initialParams={navigation}/>
         </Tab.Navigator>
       </NavigationContainer>
     )

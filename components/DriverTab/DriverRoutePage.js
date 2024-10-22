@@ -3,7 +3,6 @@ import { Alert } from 'react-native';
 import { WebView } from 'react-native-webview';
 import * as Location from 'expo-location';
 import axiosConfig from '../../staticVar.js/axiosConfig';
-import StoreDataAsync from '../../staticVar.js/utilityFunctions';
 
 export default function DriverRoutePage() {
   const [location, setLocation] = useState({
@@ -13,6 +12,7 @@ export default function DriverRoutePage() {
     longitudeDelta: 0.0421,
   });
   const webviewRef = useRef(null);
+  const locationSubscription = useRef(null); // To store the location subscription
 
   const [html, setHtml] = useState(`
     <!DOCTYPE html>
@@ -67,15 +67,40 @@ export default function DriverRoutePage() {
 
   const startTracking = async () => {
     try {
+      let { status } = await Location.requestForegroundPermissionsAsync();
+      if (status !== 'granted') {
+        console.log('Permission to access location was denied');
+        return;
+      }
+
+      // Use high accuracy for more precise location updates
+      const subscription = await Location.watchPositionAsync(
+        {
+          accuracy: Location.Accuracy.High, // Use high accuracy for better precision
+          timeInterval: 1000, // Update every 2 seconds
+          distanceInterval: 1, // Update when the user moves by 1 meter
+        },
+        async (position) => {
+          const { latitude, longitude } = position.coords;
+          setLocation((prevLocation) => ({
+            ...prevLocation,
+            latitude,
+            longitude,
+          }));
           
-          const {data} = await axiosConfig.get("/location")
-          const {latitude, longitude} = data.location
+          console.log("Updated Location:", latitude, longitude); // Log to ensure location is updating
+          await axiosConfig.post("/location", {longitude, latitude});
           
           // Send location data to the WebView
           if (webviewRef.current) {
             webviewRef.current.postMessage(JSON.stringify({ latitude, longitude }));
           }
-    
+        }
+      );
+      
+      // Store the subscription so that we can remove it later
+      locationSubscription.current = subscription;
+
     } catch (error) {
       console.error('Error in startTracking:', error);
       Alert.alert(`${error}`);
@@ -83,10 +108,14 @@ export default function DriverRoutePage() {
   };
 
   useEffect(() => {
-   const s = setInterval(()=>{
     startTracking();
-   },1000)
-   StoreDataAsync("mapInterval", JSON.stringify(s))
+
+    // Cleanup function to stop tracking when the component unmounts
+    return () => {
+        console.log("leaving")
+        locationSubscription.current.remove(); // Stosp tracking
+        locationSubscription.current = null; // Clear the reference
+    };
   }, []);
 
   return (

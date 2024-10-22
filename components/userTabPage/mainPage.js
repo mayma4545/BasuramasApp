@@ -31,15 +31,18 @@ export default function UserMainPageTab(){
                     Alert.alert("Error on fetching Schedule")
                 }
             }
-            fetchSchedule()
+           
+            setInterval(()=>{
+                fetchSchedule()
+            },3000)
         },[])
     )
     return(
         <View  style={styles.container}>
             <ImageBackground source={require("./../../assets/admin/Background2.png")} style={{position:'absolute', width:'100%', height:'100%', opacity:0.7}}></ImageBackground>
-            <View style={{width:'95%', height:"20%", backgroundColor:'#217098', alignSelf:'center', marginTop:15, borderRadius:20, padding:15, justifyContent:'center'}}>
+            <View style={{width:'95%', height:"20%", backgroundColor:'#217098', alignSelf:'center', marginTop:5, borderRadius:20, padding:15, justifyContent:'center'}}>
                 <Text style={{color:'white', fontFamily:'poppinsBold', fontSize:15}}>Status:</Text>
-                <Text style={{color:'white', fontFamily:'poppinsBold', fontSize:25, textAlign:'center'}}>Truck is on the way!</Text>
+                <Text style={{color:'white', fontFamily:'poppinsBold', fontSize:25, textAlign:'center'}}>{schedule.length > 0 ? "Truck is on the way!": "No Schedule"}</Text>
             </View>
             <View style={styles.schedContainer}>
                 <Text style={{fontFamily:'poppinsBold', fontSize:17, textAlign:'center'}}>Schedules</Text>
@@ -50,7 +53,7 @@ export default function UserMainPageTab(){
                         return(
                         <SchedComp month={e.month} time = {e.time} place ={e.place} day={e.day} key={i}/>
                         )
-                    }): <Text>No Sched</Text>
+                    }): ""
                    }
                 </ScrollView>
             </View>
@@ -71,7 +74,7 @@ const styles = StyleSheet.create({
         alignSelf:'center',
         borderRadius:10,
         margin:'auto',
-        padding:10
+    
     },
     schedules:{
         flex:1,

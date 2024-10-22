@@ -7,6 +7,7 @@ import { TextInput } from 'react-native'
 import axiosConfig from '../../staticVar.js/axiosConfig'
 import { times } from 'lodash'
 import { useFocusEffect } from '@react-navigation/native'
+import AsyncStorage from '@react-native-async-storage/async-storage'
 
 const months = [
     "January", "February", "March", "April", "May", "June",
@@ -136,7 +137,13 @@ export default function MoreTab({route}){
                         <TouchableOpacity style={isSubscribe ? styles.btn:{display:"none"}} onPress={()=> {setModal(prev =>({...prev, trashCollector:true})); fetchUserRequestCollector()}}>
                                 <Text style={styles.btnTxt}>Garbage Collector Request</Text>
                         </TouchableOpacity>
-                        <TouchableOpacity style={styles.btn} onPress={()=>{
+                        <TouchableOpacity style={styles.logoutBtn} onPress={async()=>{
+                                const d =await AsyncStorage.getItem("intervalUser")
+                                clearInterval(JSON.parse(d))
+                                const a = await AsyncStorage.getItem("interval3")
+                                clearInterval(JSON.parse(a))
+                                const s = await AsyncStorage.getItem("mapInterval")
+                                clearInterval(JSON.parse(s))
                                  navigation.reset({
                                     index:0,
                                     routes:[{'name':'signInStack'}]
@@ -170,6 +177,7 @@ const styles = StyleSheet.create({
      
     },
     btn:{
+        
         alignSelf:'center',
         width:'45%',
         height:height*0.19,
@@ -180,6 +188,18 @@ const styles = StyleSheet.create({
         margin:5,
         marginBottom:20,
         padding:5
+    },
+    logoutBtn:{
+        position:'absolute',
+        justifyContent:'center',
+        alignItems:'center',
+        height:height*0.08,
+        width:'80%',
+        padding:10,
+        borderRadius:20,
+        backgroundColor:'#abbfa0',
+        bottom:"-78%",
+        left:'10%'
     },
     btnTxt:{
         fontSize:16,
